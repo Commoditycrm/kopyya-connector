@@ -45,7 +45,7 @@ attach to and proves it's allowed to:
 ## Running from source
 
 ```bash
-pip install -r requirements.txt && playwright install chromium
+pip install -r requirements-desktop.txt && playwright install chromium
 python -m kopyya_connector
 ```
 
@@ -63,3 +63,14 @@ and avoids shipping ~150MB of Chromium in the app.
 then code-sign and notarise for macOS and sign for Windows. Both need your
 developer certificates — unsigned builds are blocked by Gatekeeper and
 SmartScreen.
+
+## Vercel
+
+`api/index.py` is a small FastAPI app (`/`, `/health`); `vercel.json` routes
+every path to it. The desktop app is excluded via `.vercelignore` — it needs a
+display and a real browser, which serverless functions don't have.
+
+```bash
+pip install -r requirements.txt uvicorn
+uvicorn api.index:app --reload
+```

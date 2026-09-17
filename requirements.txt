@@ -1,4 +1,3 @@
-# Deliberately tiny. The Connector talks to exactly two things: a browser and
-# the Kopyya API. No database driver, no broker SDK, no listener token.
-playwright==1.48.0
-httpx==0.27.2
+# Vercel installs this file. Keep it to what api/index.py needs; the desktop
+# app's browser deps live in requirements-desktop.txt.
+fastapi==0.115.6
