@@ -1,10 +1,10 @@
-# Kopyaa Connector
+# Kopyya Connector
 
-A small desktop app that connects a trader's Discord account to Kopyaa.
+A small desktop app that connects a trader's Discord account to Kopyya.
 
 ## Why it exists
 
-Kopyaa monitors a Discord channel by keeping an authenticated browser session
+Kopyya monitors a Discord channel by keeping an authenticated browser session
 open. Capturing that session **server-side** means an automated browser sitting
 on Discord's login page — which Discord challenges with a CAPTCHA on its own
 schedule (we measured 20–60 seconds, unpredictably). We do not solve or evade
@@ -18,7 +18,7 @@ trader answers it themselves — they're sitting right there.
 
 * Opens **Discord's own login page** in a real browser and waits.
 * Captures only the **session** Discord issues after a successful sign-in.
-* Sends that session to Kopyaa, which encrypts it (Fernet) before storage.
+* Sends that session to Kopyya, which encrypts it (Fernet) before storage.
 
 It never reads, stores, or transmits a password or 2FA code, and it never
 attempts to bypass Discord authentication, permissions, or verification checks.
@@ -26,14 +26,14 @@ attempts to bypass Discord authentication, permissions, or verification checks.
 ## Trader flow
 
 ```
-Kopyaa  →  Add channel  →  Connect Discord  →  shows KPY-4F2A-9C1D
+Kopyya  →  Add channel  →  Connect Discord  →  shows KPY-4F2A-9C1D
 Connector  →  paste code  →  Connect  →  browser opens  →  sign in
-Kopyaa  →  Connected
+Kopyya  →  Connected
 ```
 
 ## Pairing codes
 
-The Connector has no Kopyaa login. A pairing code tells it which source to
+The Connector has no Kopyya login. A pairing code tells it which source to
 attach to and proves it's allowed to:
 
 * **Single use** — claiming it once makes it useless to anyone else
@@ -46,10 +46,10 @@ attach to and proves it's allowed to:
 
 ```bash
 pip install -r requirements.txt && playwright install chromium
-python -m kopyaa_connector
+python -m kopyya_connector
 ```
 
-Point it at a non-production backend with `KOPYAA_BACKEND_URL`.
+Point it at a non-production backend with `KOPYYA_BACKEND_URL`.
 
 ## Browser choice
 
@@ -59,7 +59,7 @@ and avoids shipping ~150MB of Chromium in the app.
 
 ## Packaging (not done yet)
 
-`pyinstaller --windowed --name "Kopyaa Connector" kopyaa_connector/__main__.py`,
+`pyinstaller --windowed --name "Kopyya Connector" kopyya_connector/__main__.py`,
 then code-sign and notarise for macOS and sign for Windows. Both need your
 developer certificates — unsigned builds are blocked by Gatekeeper and
 SmartScreen.

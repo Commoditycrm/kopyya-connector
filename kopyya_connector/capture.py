@@ -1,8 +1,8 @@
 """Sign in to Discord in a real browser on the trader's machine and hand the
-resulting session to Kopyaa.
+resulting session to Kopyya.
 
 This is the whole point of the Connector: the sign-in happens HERE, on the
-trader's own computer, in a visible browser, driven by a human. Kopyaa's servers
+trader's own computer, in a visible browser, driven by a human. Kopyya's servers
 never load Discord's login page — which is what they were being challenged for.
 
 We do not type, read, or transmit the trader's password or 2FA code. The browser
@@ -40,7 +40,7 @@ class CaptureError(Exception):
 
 
 def claim_code(backend_url: str, code: str) -> dict[str, Any]:
-    """Redeem the pairing code shown in Kopyaa."""
+    """Redeem the pairing code shown in Kopyya."""
     try:
         resp = httpx.post(
             f"{backend_url.rstrip('/')}/api/discord-sources/pair/claim",
@@ -48,14 +48,14 @@ def claim_code(backend_url: str, code: str) -> dict[str, Any]:
             timeout=30.0,
         )
     except httpx.HTTPError as exc:
-        raise CaptureError(f"Couldn't reach Kopyaa: {exc}") from exc
+        raise CaptureError(f"Couldn't reach Kopyya: {exc}") from exc
     if resp.status_code == 404:
         raise CaptureError(
             "That code isn't valid any more. Codes expire after 10 minutes and "
-            "can only be used once — generate a fresh one in Kopyaa."
+            "can only be used once — generate a fresh one in Kopyya."
         )
     if resp.status_code >= 400:
-        raise CaptureError(f"Kopyaa rejected the code ({resp.status_code}).")
+        raise CaptureError(f"Kopyya rejected the code ({resp.status_code}).")
     return resp.json()
 
 
@@ -113,7 +113,7 @@ def _capture_with(channel: str | None, on_status: Callable[[str], None]) -> dict
 def upload_session(
     backend_url: str, code: str, upload_token: str, state: dict[str, Any]
 ) -> None:
-    """Hand the session to Kopyaa, which validates and encrypts it."""
+    """Hand the session to Kopyya, which validates and encrypts it."""
     try:
         resp = httpx.post(
             f"{backend_url.rstrip('/')}/api/discord-sources/pair/complete",
@@ -121,6 +121,6 @@ def upload_session(
             timeout=60.0,
         )
     except httpx.HTTPError as exc:
-        raise CaptureError(f"Couldn't reach Kopyaa to finish: {exc}") from exc
+        raise CaptureError(f"Couldn't reach Kopyya to finish: {exc}") from exc
     if resp.status_code >= 400:
-        raise CaptureError(f"Kopyaa rejected the session ({resp.status_code}).")
+        raise CaptureError(f"Kopyya rejected the session ({resp.status_code}).")

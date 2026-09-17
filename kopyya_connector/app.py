@@ -1,5 +1,5 @@
-"""Kopyaa Connector — a small desktop app that connects a trader's Discord
-account to Kopyaa.
+"""Kopyya Connector — a small desktop app that connects a trader's Discord
+account to Kopyya.
 
 Tkinter rather than a web UI or a heavier toolkit: it ships with Python, adds
 nothing to the download, and this window has three widgets. The app exists to
@@ -18,7 +18,7 @@ from tkinter import ttk
 
 from .capture import CaptureError, capture_session, claim_code, upload_session
 
-DEFAULT_BACKEND = os.environ.get("KOPYAA_BACKEND_URL", "https://app.kopyaa.com")
+DEFAULT_BACKEND = os.environ.get("KOPYYA_BACKEND_URL", "https://kopyya.com")
 
 _BG = "#0f1115"
 _FG = "#e6e8eb"
@@ -32,7 +32,7 @@ class ConnectorApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.busy = False
-        root.title("Kopyaa Connector")
+        root.title("Kopyya Connector")
         root.configure(bg=_BG)
         root.geometry("460x340")
         root.resizable(False, False)
@@ -46,7 +46,7 @@ class ConnectorApp:
         ).pack(anchor="w")
         tk.Label(
             wrap,
-            text="Enter the code shown in Kopyaa, then sign in to\nDiscord in the browser window that opens.",
+            text="Enter the code shown in Kopyya, then sign in to\nDiscord in the browser window that opens.",
             bg=_BG, fg=_MUTED, font=("Helvetica", 11), justify="left",
         ).pack(anchor="w", pady=(6, 18))
 
@@ -111,7 +111,7 @@ class ConnectorApp:
             return
         code = self.code_var.get().strip()
         if not code:
-            self.set_status("Enter the pairing code from Kopyaa.", _ERROR)
+            self.set_status("Enter the pairing code from Kopyya.", _ERROR)
             return
 
         self.busy = True
@@ -129,11 +129,11 @@ class ConnectorApp:
 
             state = capture_session(self._from_worker)
 
-            self._from_worker("Uploading to Kopyaa…")
+            self._from_worker("Uploading to Kopyya…")
             upload_session(self.backend, code, claim["upload_token"], state)
 
             self._finish(
-                "Connected. You can close this window — Kopyaa is now "
+                "Connected. You can close this window — Kopyya is now "
                 "monitoring the channel.",
                 _OK,
             )
