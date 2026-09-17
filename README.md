@@ -57,17 +57,23 @@ Prefers the trader's installed **Chrome**, then **Edge**, then Playwright's
 bundled Chromium. A real consumer browser is both less likely to be challenged
 and avoids shipping ~150MB of Chromium in the app.
 
-## Packaging (not done yet)
+## Releasing
 
-`pyinstaller --windowed --name "Kopyya Connector" kopyya_connector/__main__.py`,
-then code-sign and notarise for macOS and sign for Windows. Both need your
-developer certificates — unsigned builds are blocked by Gatekeeper and
-SmartScreen.
+Push a version tag and GitHub Actions builds the Windows `.exe` and macOS `.zip`
+and publishes them as a release:
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+Builds are unsigned for now, so Windows SmartScreen and macOS Gatekeeper warn on
+first launch. Signing needs developer certificates.
 
 ## Vercel
 
-`api/index.py` is a small FastAPI app (`/`, `/health`); `vercel.json` routes
-every path to it. The desktop app is excluded via `.vercelignore` — it needs a
+`api/index.py` serves the download page at `/`, plus `/health` and
+`/api/status`; `vercel.json` routes every path to it. The page links to the
+latest GitHub release. The desktop app is excluded via `.vercelignore` — it needs a
 display and a real browser, which serverless functions don't have.
 
 ```bash
