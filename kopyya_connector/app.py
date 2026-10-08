@@ -34,7 +34,7 @@ class ConnectorApp:
         self.busy = False
         root.title("Kopyya Connector")
         root.configure(bg=_BG)
-        root.geometry("460x340")
+        root.geometry("460x420")
         root.resizable(False, False)
 
         wrap = tk.Frame(root, bg=_BG, padx=28, pady=24)
@@ -81,9 +81,18 @@ class ConnectorApp:
         )
         self.status.pack(anchor="w", fill="x")
 
-        # Only surfaced when it's actually needed — a backend field on the main
-        # screen would just be a thing to get wrong.
-        self.backend = DEFAULT_BACKEND
+        # Which Kopyya the code was minted in. Prefilled and left alone by almost
+        # everyone; the one case it matters is a tester whose code came from a
+        # non-prod Kopyya (e.g. test.kopyya.com) — a code only resolves against
+        # the same backend that issued it, so a wrong server reads as an expired
+        # code. Kept at the bottom, muted, so it's there without inviting edits.
+        tk.Label(wrap, text="Kopyya server", bg=_BG, fg=_MUTED,
+                 font=("Helvetica", 9)).pack(anchor="w", pady=(16, 0))
+        self.backend_var = tk.StringVar(value=DEFAULT_BACKEND)
+        tk.Entry(
+            wrap, textvariable=self.backend_var, font=("Menlo", 10),
+            bg="#1a1d23", fg=_MUTED, insertbackground=_FG, relief="flat",
+        ).pack(fill="x", ipady=5, pady=(4, 0))
 
     # ── UI helpers (main thread only) ───────────────────────────────────────
 
@@ -114,23 +123,26 @@ class ConnectorApp:
             self.set_status("Enter the pairing code from Kopyya.", _ERROR)
             return
 
+        # Read the Tk var here, on the main thread; blank falls back to default.
+        backend = self.backend_var.get().strip().rstrip("/") or DEFAULT_BACKEND
+
         self.busy = True
         self.button.configure(state="disabled", text="Connecting…")
         self.progress.pack(fill="x", pady=(0, 10))
         self.progress.start(12)
         self.set_status("Checking the code…")
 
-        threading.Thread(target=self._run, args=(code,), daemon=True).start()
+        threading.Thread(target=self._run, args=(code, backend), daemon=True).start()
 
-    def _run(self, code: str) -> None:
+    def _run(self, code: str, backend: str) -> None:
         try:
-            claim = claim_code(self.backend, code)
+            claim = claim_code(backend, code)
             self._from_worker(f"Connecting “{claim['label']}”. Opening browser…")
 
             state = capture_session(self._from_worker)
 
             self._from_worker("Uploading to Kopyya…")
-            upload_session(self.backend, code, claim["upload_token"], state)
+            upload_session(backend, code, claim["upload_token"], state)
 
             self._finish(
                 "Connected. You can close this window — Kopyya is now "
