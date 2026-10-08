@@ -49,7 +49,10 @@ pip install -r requirements-desktop.txt && playwright install chromium
 python -m kopyya_connector
 ```
 
-Point it at a non-production backend with `KOPYYA_BACKEND_URL`.
+Point it at a non-production backend (e.g. `https://test.kopyya.com`) with the
+**Kopyya server** field at the bottom of the window, or with `KOPYYA_BACKEND_URL`
+(which prefills that field). A code only resolves against the backend that minted
+it, so a test-Kopyya code paired through the prod default reads as expired.
 
 ## Browser choice
 
